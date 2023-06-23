@@ -13,7 +13,7 @@ export async function authorLoadOptions(
   { page, loggedUser }
 ) {
   const responseJSON = await sendGetRequest(
-    siteData.apiBaseURL + `getAuthors?search=${search}&page=${page}`,
+    siteData.apiBaseURL + `authors?search=${search}&page=${page}`,
     { Authorization: `Bearer ${loggedUser?.token}` }
   );
 
@@ -39,7 +39,7 @@ export async function sourceLoadOptions(
   { page, loggedUser }
 ) {
   const responseJSON = await sendGetRequest(
-    siteData.apiBaseURL + `getSources?search=${search}&page=${page}`,
+    siteData.apiBaseURL + `sources?search=${search}&page=${page}`,
     { Authorization: `Bearer ${loggedUser?.token}` }
   );
 

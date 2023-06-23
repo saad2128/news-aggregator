@@ -59,7 +59,7 @@ For the Front end:
 For backend:
 ```bash
 	composer install
-	php artisan generate:key
+	php artisan key:generate
 	php artisan migrate
 	php artisan seed
  ```
