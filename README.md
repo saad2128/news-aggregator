@@ -5,7 +5,7 @@ News Aggregator Web Application using Laravel and React Js
 
 ## Table of Contents
 
-- [Project Name](#project-name)
+  - [Project Name](#project-name)
   - [Table of Contents](#table-of-contents)
   - [Docker based Configuration](#docker-based-configuration)
   - [Verify Tables in MySQL Container](#verify-tables-in-mysql-container)
@@ -19,6 +19,7 @@ Copy `.env.example` and rename it to `.env`.
 ```bash
 docker-compose build
 docker-compose up
+```
 
 Please wait a couple of minutes for the backend, frontend, and MySQL container to be initialized.
 
