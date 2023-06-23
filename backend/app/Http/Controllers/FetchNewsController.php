@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Log;
 class FetchNewsController extends Controller
 {
 
-    public function testGetNews() {
+    public function generateNews() {
         $this->getFromNewsAPI();
         $this->getFromGuardian();
         $this->getFromNyTimes();
