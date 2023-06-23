@@ -36,7 +36,7 @@ const Home = () => {
 
     sendGetRequest(
       siteData.apiBaseURL +
-        `getArticles?page=${page}&search=${searchTerm}&authors=${authorIds}&sources=${sourceIds}`,
+        `articles?page=${page}&search=${searchTerm}&authors=${authorIds}&sources=${sourceIds}`,
       { Authorization: `Bearer ${loggedUser?.token}` }
     ).then(function (response) {
       if (response.status) {
@@ -57,13 +57,13 @@ const Home = () => {
 
   useEffect(() => {
     loadSelectedOptions(
-      siteData.apiBaseURL + "getAuthors",
+      siteData.apiBaseURL + "authors",
       "author_name",
       setPreferredAuthors,
       loggedUser
     );
     loadSelectedOptions(
-      siteData.apiBaseURL + "getSources",
+      siteData.apiBaseURL + "sources",
       "source",
       setPreferredSources,
       loggedUser
@@ -118,7 +118,7 @@ const Home = () => {
   const handleButtonClick = async () => {
     setIsDataLoading(true); // Set loading state to true
 
-    sendGetRequest(siteData.apiBaseURL + `testAPI`).then(function (response) {
+    sendGetRequest(siteData.apiBaseURL + `generate-news`).then(function (response) {
       setIsDataLoading(false);
       window.location.reload();
     });
