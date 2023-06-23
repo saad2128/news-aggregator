@@ -25,31 +25,41 @@ Please wait a couple of minutes for the backend, frontend, and MySQL container t
 
 Open a new command prompt and type the following command:
 
+```bash
 docker-compose exec backend-app php artisan migrate --seed
+```
 
 This will create the desired tables.
 
-Your app will be running at http://localhost:3000/.
+Your app will be running at **http://localhost:3000/**.
+Click on **Get News** button to fetch news.
+
 
 ## Verify Tables in MySQL Container
 To verify tables in the MySQL container:
 
+```bash
 docker ps  # Check MySQL container ID
 docker exec -it <mysql-container-id> sh  # Replace <mysql-container-id> with the actual ID
 mysql -u root -p  # Enter password (type root)
 show databases;
 use news;
 show tables;
-
-(these configuration are defined in .env file)
+```
+(these configurations are defined in .env file)
 
 ## For manual Configuration:
-For Front end:
+For the Front end:
+
+```bash
 	npm install
 	npm build
+ ```
 
 For backend:
+```bash
 	composer install
 	php artisan generate:key
 	php artisan migrate
 	php artisan seed
+ ```
