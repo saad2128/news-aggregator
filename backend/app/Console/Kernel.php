@@ -2,12 +2,13 @@
 
 namespace App\Console;
 
-use App\Http\Controllers\FetchNewsController;
+use App\Http\Controllers\Api\FetchNewsController;
+use App\Services\NewsService;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
-class Kernel extends ConsoleKernel
+class Kernel extends ConsoleKernel 
 {
     /**
      * Define the application's command schedule.
@@ -23,9 +24,9 @@ class Kernel extends ConsoleKernel
          * Get from NewsAPI in background
          */
         $schedule->call(function() {
-            (new FetchNewsController())->getFromNewsAPI();
-            (new FetchNewsController())->getFromGuardian();
-            (new FetchNewsController())->getFromNyTimes();
+            $newsService = app(NewsService::class);
+        $fetchNewsController = new FetchNewsController($newsService);
+        $fetchNewsController->fetchNews();
         })->everyFiveMinutes();
     }
 

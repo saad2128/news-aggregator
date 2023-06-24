@@ -1,17 +1,16 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\ArticleController;
-use App\Http\Controllers\PreferencesController;
+use App\Http\Controllers\Api\ArticleController;
+use App\Http\Controllers\Api\PreferencesController;
+use App\Http\Controllers\Api\FetchNewsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FetchNewsController;
-
 
 Route::post('/register', [AuthController::class, 'createUser']);
 Route::post('/login', [AuthController::class, 'loginUser']);
 Route::post('/logout', [AuthController::class, 'logOut']);
-Route::get('/generate-news', [FetchNewsController::class, 'generateNews']);
+Route::get('/news', [FetchNewsController::class, 'fetchNews']);
 
 Route::group(['middleware' => 'auth.if.has.token'], function () {
 

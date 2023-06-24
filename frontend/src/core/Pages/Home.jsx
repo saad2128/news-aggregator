@@ -118,7 +118,7 @@ const Home = () => {
   const handleButtonClick = async () => {
     setIsDataLoading(true); // Set loading state to true
 
-    sendGetRequest(siteData.apiBaseURL + `generate-news`).then(function (response) {
+    sendGetRequest(siteData.apiBaseURL + `news`).then(function (response) {
       setIsDataLoading(false);
       window.location.reload();
     });

@@ -1,0 +1,235 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Author;
+use App\Models\News;
+use App\Models\Source;
+use Carbon\Carbon;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log;
+use App\Repositories\NewsRepository;
+
+class NewsService
+{
+    private $newsRepository;
+
+    public function __construct(NewsRepository $newsRepository)
+    {
+        $this->newsRepository = $newsRepository;
+    }
+
+    public function getFromNewsAPI()
+    {
+        try {
+            $newsAPIKey = env('NEWS_API');
+            Log::info('Value of $newsAPIKey: ' . json_encode($newsAPIKey));
+            $newsAPIHttp = Http::withOptions(['verify' => false])->timeout(30)->get("https://newsapi.org/v2/top-headlines?country=us&pageSize=30&apiKey={$newsAPIKey}");
+
+            if (!$newsAPIHttp->ok()) {
+                throw new \Exception('Failed to fetch news from NewsAPI.');
+            }
+
+            $results = json_decode($newsAPIHttp->body(), true);
+
+            foreach ($results['articles'] as $article) {
+                $article_url = $article['url'];
+
+                //Checking duplicate entries.
+                $found_duplicate = $this->newsRepository->checkDuplicateNews($article_url);
+                if ($found_duplicate) {
+                    continue;
+                }
+
+                $newsData = [
+                    'title' => $article['title'],
+                    'slug' => Str::slug($article['title']),
+                    'description' => $article['description'],
+                    'url' => $article['url'],
+                    'url_to_image' => $article['urlToImage'],
+                    'content' => $article['content'],
+                    'published_at' => Carbon::parse($article['publishedAt']),
+                    'apiSource' => 'NewsAPI',
+                ];
+
+                /**
+                 * Adding source
+                 */
+
+                $source_slug = Arr::get($article, 'source.id');
+                $source_name = Arr::get($article, 'source.name');
+                if (empty($source_slug)) {
+                    $source_slug = Str::slug($source_name);
+                }
+
+                $source_model = Source::firstOrCreate(['source_slug' => $source_slug],
+                    ['source_slug' => $source_slug, 'source' => $source_name]);
+
+                $newsData['raw_author'] = Arr::get($article, 'author');
+                $newsData['source_id'] = $source_model->id;
+                $this->newsRepository->createNews($newsData);
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Error in getFromNewsAPI: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getFromGuardian()
+    {
+        try {
+            $apiKey = env('THE_GUARDIAN_API');
+            $guardianAPIHttp = Http::withOptions(['verify' => false])->timeout(30)->get("https://content.guardianapis.com/search",
+                [
+                    'api-key' => $apiKey,
+                    'show-fields' => 'thumbnail,byline,trailText,headline',
+                    'page-size' => 30,
+                ]);
+
+            if (!$guardianAPIHttp->ok()) {
+                throw new \Exception('Failed to fetch news from The Guardian.');
+            }
+
+            $results = json_decode($guardianAPIHttp->body(), true);
+
+            $source_model = Source::firstOrCreate(['source_slug' => 'the-guardian'],
+                ['source_slug' => 'the-guardian', 'source' => 'The Guardian']);
+
+            foreach ($results['response']['results'] as $article) {
+                $article_url = $article['webUrl'];
+
+                //Checking duplicate entries.
+                $found_duplicate = News::query()->select('id')->where('url', $article_url)->first();
+                if ($found_duplicate) {
+                    continue;
+                }
+
+                $title = Arr::get($article, 'fields.headline');
+                $description = Arr::get($article, 'fields.trailText');
+                $thumbnail = Arr::get($article, 'fields.thumbnail');
+
+                $newsData = [
+                    'title' => $title,
+                    'slug' => Str::slug($title),
+                    'description' => $description,
+                    'url' => $article_url,
+                    'url_to_image' => $thumbnail,
+                    'published_at' => Carbon::parse($article['webPublicationDate']),
+                    'apiSource' => 'TheGuardian',
+                ];
+
+                $newsData['raw_author'] = Arr::get($article, 'fields.byline');
+                $newsData['source_id'] = $source_model->id;
+
+                $this->newsRepository->createNews($newsData);
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Error in getFromGuardian: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getFromNyTimes()
+    {
+        try {
+            $apiKey = env('NYTIMES');
+            $nyTimesAPIHttp = Http::withOptions(['verify' => false])->timeout(30)->get("https://api.nytimes.com/svc/search/v2/articlesearch.json",
+                [
+                    'api-key' => $apiKey,
+                ]);
+
+            if (!$nyTimesAPIHttp->ok()) {
+                throw new \Exception('Failed to fetch news from The New York Times.');
+            }
+
+            $results = json_decode($nyTimesAPIHttp->body(), true);
+
+            $source_name = 'The New York Times';
+            $source_slug = Str::slug($source_name);
+            $source_model = Source::firstOrCreate(
+                ['source_slug' => $source_slug],
+                ['source_slug' => $source_slug, 'source' => $source_name]
+            );
+
+            foreach ($results['response']['docs'] as $article) {
+                $article_url = $article['web_url'];
+
+                //Checking duplicate entries.
+                $found_duplicate = $this->newsRepository->checkDuplicateNews($article_url);
+                if ($found_duplicate) {
+                    continue;
+                }
+
+                $title = Arr::get($article, 'headline.main');
+                $description = Arr::get($article, 'abstract');
+                $thumbnail = '';
+                if (!empty($article['multimedia'])) {
+                    foreach ($article['multimedia'] as $media) {
+                        if (Arr::get($media, 'format') === 'thumbnail') {
+                            $thumbnail = $media['url'];
+                            break;
+                        }
+                    }
+                }
+
+                $newsData = [
+                    'title' => $title,
+                    'slug' => Str::slug($title),
+                    'description' => $description,
+                    'url' => $article_url,
+                    'url_to_image' => $thumbnail,
+                    'published_at' => Carbon::parse($article['pub_date']),
+                    'apiSource' => 'NyTimes',
+                ];
+
+                $newsData['raw_author'] = Arr::get($article, 'byline.original');
+                $newsData['source_id'] = $source_model->id;
+                $this->newsRepository->createNews($newsData);
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Error in getFromNyTimes: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+
+    private function createNewsData($article, $apiSource)
+    {
+        $title = Arr::get($article, 'title');
+        $description = Arr::get($article, 'description');
+        $article_url = Arr::get($article, 'url');
+        $thumbnail = Arr::get($article, 'urlToImage');
+        $published_at = Carbon::parse(Arr::get($article, 'publishedAt'));
+        $source_slug = Arr::get($article, 'source.id');
+        $source_name = Arr::get($article, 'source.name');
+        $raw_author = Arr::get($article, 'author');
+
+        if (empty($source_slug)) {
+            $source_slug = Str::slug($source_name);
+        }
+
+        $source_model = Source::firstOrCreate(['source_slug' => $source_slug],
+            ['source_slug' => $source_slug, 'source' => $source_name]);
+
+        return [
+            'title' => $title,
+            'slug' => Str::slug($title),
+            'description' => $description,
+            'url' => $article_url,
+            'url_to_image' => $thumbnail,
+            'content' => $article['content'],
+            'published_at' => $published_at,
+            'apiSource' => $apiSource,
+            'raw_author' => $raw_author,
+            'source_id' => $source_model->id,
+        ];
+    }
+}
