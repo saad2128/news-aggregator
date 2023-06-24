@@ -38,7 +38,7 @@ class NewsService
                 $article_url = $article['url'];
 
                 //Checking duplicate entries.
-                $found_duplicate = $this->newsRepository->checkDuplicateNews($article_url);
+                $found_duplicate = News::query()->select('id')->where('url', $article_url)->first();
                 if ($found_duplicate) {
                     continue;
                 }
@@ -201,35 +201,4 @@ class NewsService
     }
 
 
-    private function createNewsData($article, $apiSource)
-    {
-        $title = Arr::get($article, 'title');
-        $description = Arr::get($article, 'description');
-        $article_url = Arr::get($article, 'url');
-        $thumbnail = Arr::get($article, 'urlToImage');
-        $published_at = Carbon::parse(Arr::get($article, 'publishedAt'));
-        $source_slug = Arr::get($article, 'source.id');
-        $source_name = Arr::get($article, 'source.name');
-        $raw_author = Arr::get($article, 'author');
-
-        if (empty($source_slug)) {
-            $source_slug = Str::slug($source_name);
-        }
-
-        $source_model = Source::firstOrCreate(['source_slug' => $source_slug],
-            ['source_slug' => $source_slug, 'source' => $source_name]);
-
-        return [
-            'title' => $title,
-            'slug' => Str::slug($title),
-            'description' => $description,
-            'url' => $article_url,
-            'url_to_image' => $thumbnail,
-            'content' => $article['content'],
-            'published_at' => $published_at,
-            'apiSource' => $apiSource,
-            'raw_author' => $raw_author,
-            'source_id' => $source_model->id,
-        ];
-    }
 }
