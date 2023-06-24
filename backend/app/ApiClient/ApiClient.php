@@ -6,17 +6,15 @@ use Illuminate\Support\Facades\Http;
 
 class ApiClient
 {
-    private $verify;
-    private $timeout;
+    private $options;
 
-    public function __construct($verify = true, $timeout = 30)
+    public function __construct($options = [])
     {
-        $this->verify = $verify;
-        $this->timeout = $timeout;
+        $this->options = $options;
     }
 
     public function get($url)
     {
-        return Http::withOptions(['verify' => $this->verify])->timeout($this->timeout)->get($url);
+        return Http::withOptions($this->options)->get($url);
     }
 }
