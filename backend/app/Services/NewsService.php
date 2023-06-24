@@ -11,22 +11,31 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 use App\Repositories\NewsRepository;
+use App\ApiClient\ApiClient;
+use Illuminate\Support\Facades\Config;
 
 class NewsService
 {
     private $newsRepository;
+    private $apiClient;
 
-    public function __construct(NewsRepository $newsRepository)
+    public function __construct(NewsRepository $newsRepository, ApiClient $apiClient)
     {
         $this->newsRepository = $newsRepository;
+        $this->apiClient = $apiClient;
     }
 
     public function getFromNewsAPI()
     {
         try {
-            $newsAPIKey = env('NEWS_API');
-            Log::info('Value of $newsAPIKey: ' . json_encode($newsAPIKey));
-            $newsAPIHttp = Http::withOptions(['verify' => false])->timeout(30)->get("https://newsapi.org/v2/top-headlines?country=us&pageSize=30&apiKey={$newsAPIKey}");
+            $newsAPIConfig = Config::get('newsapi');
+            $apiKey = $newsAPIConfig['api_key'];
+            $baseUrl = $newsAPIConfig['base_url'];
+            $endpoint = $newsAPIConfig['endpoints']['top_headlines'];
+
+            $newsAPIUrl = $baseUrl . $endpoint . '?country=us&pageSize=30&apiKey=' . $apiKey;
+
+            $newsAPIHttp = $this->apiClient->get($newsAPIUrl);
 
             if (!$newsAPIHttp->ok()) {
                 throw new \Exception('Failed to fetch news from NewsAPI.');
@@ -82,13 +91,12 @@ class NewsService
     public function getFromGuardian()
     {
         try {
-            $apiKey = env('THE_GUARDIAN_API');
-            $guardianAPIHttp = Http::withOptions(['verify' => false])->timeout(30)->get("https://content.guardianapis.com/search",
-                [
-                    'api-key' => $apiKey,
-                    'show-fields' => 'thumbnail,byline,trailText,headline',
-                    'page-size' => 30,
-                ]);
+            $guardianAPIConfig = Config::get('guardianapi');
+            $apiKey = $guardianAPIConfig['api_key'];
+            $baseUrl = $guardianAPIConfig['base_url'];
+            $param = $guardianAPIConfig['param'];
+            $guardianAPIUrl = $baseUrl . '?api-key=' . $apiKey . '&show-fields=' . $param;
+            $guardianAPIHttp = $this->apiClient->get($guardianAPIUrl);
 
             if (!$guardianAPIHttp->ok()) {
                 throw new \Exception('Failed to fetch news from The Guardian.');
@@ -138,14 +146,16 @@ class NewsService
     public function getFromNyTimes()
     {
         try {
-            $apiKey = env('NYTIMES');
-            $nyTimesAPIHttp = Http::withOptions(['verify' => false])->timeout(30)->get("https://api.nytimes.com/svc/search/v2/articlesearch.json",
-                [
-                    'api-key' => $apiKey,
-                ]);
+            $nytimesAPIConfig = Config::get('nytimesapi');
+            $apiKey = $nytimesAPIConfig['api_key'];
+            $baseUrl = $nytimesAPIConfig['base_url'];
+
+            $nytimesAPIUrl = $baseUrl . '?api-key=' . $apiKey;
+
+            $nyTimesAPIHttp = $this->apiClient->get($nytimesAPIUrl);
 
             if (!$nyTimesAPIHttp->ok()) {
-                throw new \Exception('Failed to fetch news from The New York Times.');
+                throw new \Exception('Failed to fetch news from The New York Times');
             }
 
             $results = json_decode($nyTimesAPIHttp->body(), true);
