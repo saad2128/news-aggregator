@@ -1,46 +1,36 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Repositories;
 
 use App\Models\Author;
 use App\Models\News;
 use App\Models\Source;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
-class ArticleController extends Controller
+class ArticleRepository
 {
-      public function getArticles(Request $request)
+    public function getArticles($search, $authors, $sources)
     {
         $articlesQuery = News::query();
-        $search = $request->search;
-        Log::info('Value of $search: ' . json_encode($search));
-        $authors = $this->getFilteredList($request->authors);
-        $sources = $this->getFilteredList($request->sources);
 
         $this->applySearchFilters($articlesQuery, $search);
         $this->applyAuthorFilters($articlesQuery, $authors);
         $this->applySourceFilters($articlesQuery, $sources);
-        $this->applyPreferredFilters($articlesQuery, $request);
+        $this->applyPreferredFilters($articlesQuery);
 
-        $results = $articlesQuery->with('source')
+        return $articlesQuery->with('source')
             ->orderBy('published_at', 'desc')
             ->paginate(10, ['*'], 'page');
-
-        return response()->json([
-            'status' => true,
-            'results' => $results,
-        ]);
     }
 
-    private function applyPreferredFilters($query, $request)
+    private function applyPreferredFilters($query)
     {
         if (Auth::check()) {
-            $preference = json_decode($request->user()->preference, true);
-            $preferredAuthors = (array) Arr::get($preference, 'authors');
-            $preferredSources = (array) Arr::get($preference, 'sources');
+            $user = Auth::user();
+            $preference = json_decode($user->preference, true);
+            $preferredAuthors = (array)Arr::get($preference, 'authors');
+            $preferredSources = (array)Arr::get($preference, 'sources');
 
             if (count($preferredAuthors) || count($preferredSources)) {
                 $query->where(function ($subQuery) use ($preferredAuthors, $preferredSources) {
@@ -52,11 +42,6 @@ class ArticleController extends Controller
                 });
             }
         }
-    }
-
-    private function getFilteredList($list)
-    {
-        return array_filter(explode(',', $list));
     }
 
     private function applySearchFilters($query, $search)
@@ -87,11 +72,11 @@ class ArticleController extends Controller
         }
     }
 
-    public function getAuthors(Request $request)
+    public function getAuthors($search)
     {
         $authorsQuery = Author::query();
 
-        $user = $request->user();
+        $user = Auth::user();
         if ($user) {
             $preferredAuthorIds = $user->preferred_author_ids;
 
@@ -100,24 +85,18 @@ class ArticleController extends Controller
             }
         }
 
-        $search = $request->search;
         if (!empty($search)) {
             $authorsQuery->where('author_name', 'LIKE', "%{$search}%");
         }
 
-        $authors = $authorsQuery->orderBy('author_name')->simplePaginate(10, ['*']);
-
-        return response()->json([
-            'status' => true,
-            'results' => $authors
-        ]);
+        return $authorsQuery->orderBy('author_name')->simplePaginate(10, ['*']);
     }
 
-    public function getSources(Request $request)
+    public function getSources($search)
     {
         $sourcesQuery = Source::query();
 
-        $user = $request->user();
+        $user = Auth::user();
         if ($user) {
             $preferredSourceIds = $user->preferred_source_ids;
 
@@ -126,18 +105,10 @@ class ArticleController extends Controller
             }
         }
 
-        $search = $request->search;
         if (!empty($search)) {
             $sourcesQuery->where('source', 'LIKE', "%{$search}%");
         }
 
-        $sources = $sourcesQuery->orderBy('source')->simplePaginate(10, ['*'], 'page');
-
-        return response()->json([
-            'status' => true,
-            'results' => $sources
-        ]);
+        return $sourcesQuery->orderBy('source')->simplePaginate(10, ['*'], 'page');
     }
-
-
 }
