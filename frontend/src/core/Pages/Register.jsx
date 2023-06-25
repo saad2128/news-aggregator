@@ -21,7 +21,7 @@ const Register = () => {
     sendPostRequest("register", formData).then(function (response) {
       if (response.status) {
         localStorage.setItem("currentUser", JSON.stringify(response.user));
-       
+
         navigate("/");
       }
     });
