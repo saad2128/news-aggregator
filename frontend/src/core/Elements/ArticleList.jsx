@@ -1,5 +1,4 @@
 import React from "react";
-import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router-dom";
 import LoadingItem from "./LoadingItem";
 import { ArticleCard } from "./ArticleCard";
@@ -45,22 +44,14 @@ const ArticleList = ({ articles, loading, loggedUser, totalNews }) => (
           </div>
         ) : (
           <div className="text-center py-16 px-6 sm:py-24 lg:px-8">
-            <CheckCircleIcon
-              className="mx-auto block h-16 w-16 text-center"
-              aria-hidden="true"
-            />
-
             <p className="mt-1 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl lg:text-6xl mb-4">
               No articles available at this moment
             </p>
 
-            <Link
-              to={"/"}
-              className="text-base font-medium text-indigo-700 hover:text-indigo-600"
-            >
+            <div className="text-base font-medium text-indigo-700 hover:text-indigo-600">
               Click on Get News to see new articles{" "}
               <span aria-hidden="true"> →</span>
-            </Link>
+            </div>
             {loggedUser && (
               <p className="mt-4 text-sm text-gray-500">
                 You can also consider resetting your{" "}
