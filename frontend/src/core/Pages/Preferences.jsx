@@ -3,8 +3,8 @@ import { sendGetRequest, sendPostRequest } from "../ApiService";
 import { currentUser } from "../Elements/Utils";
 import { useForm } from "react-hook-form";
 import Skeleton from "react-loading-skeleton";
-import {toast, ToastContainer} from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const Preferences = () => {
   const {
@@ -19,20 +19,18 @@ const Preferences = () => {
   const loggedUser = currentUser();
 
   useEffect(() => {
-      setLoading(true);
-      sendGetRequest(
-            siteData.apiBaseURL+`preferences`,
-            {'Authorization': `Bearer ${loggedUser?.token}`},
-        ).then(function (response) {
-        if (response.status) {
-          setAuthors(response.results.authors);
-          setSources(response.results.sources);
-          setPreference(JSON.parse(response.results.preference));
-        }
+    setLoading(true);
+    sendGetRequest(siteData.apiBaseURL + `preferences`, {
+      Authorization: `Bearer ${loggedUser?.token}`,
+    }).then(function (response) {
+      if (response.status) {
+        setAuthors(response.results.authors);
+        setSources(response.results.sources);
+        setPreference(JSON.parse(response.results.preference));
+      }
 
-        setLoading(false);
-        });
-
+      setLoading(false);
+    });
   }, []);
 
   if (Array.isArray(preference?.authors) && preference?.authors?.length) {
@@ -47,20 +45,23 @@ const Preferences = () => {
     preference.sources = [];
   }
 
-    const onSubmit = (submittedData) => {
-        const savePreference = sendPostRequest(
-            siteData.apiBaseURL+'preferences',
-        JSON.stringify(submittedData),
-            {'Authorization': `Bearer ${loggedUser?.token}`, 'Content-Type': 'application/json'}
-      );
-
-        toast.promise(savePreference, {
-            pending: `Saving...`,
-            success: `Preferences has been saved`,
-            error: `Something went wrong, please try again`,
-        });
+  const onSubmit = (submittedData) => {
+    const savePreference = sendPostRequest(
+      siteData.apiBaseURL + "preferences",
+      JSON.stringify(submittedData),
+      {
+        Authorization: `Bearer ${loggedUser?.token}`,
+        "Content-Type": "application/json",
       }
-   
+    );
+
+    toast.promise(savePreference, {
+      pending: `Saving...`,
+      success: `Preferences has been saved`,
+      error: `Something went wrong, please try again`,
+    });
+  };
+
   return (
     <>
       <div className="mx-auto px-2 sm:px-6 lg:px-8">

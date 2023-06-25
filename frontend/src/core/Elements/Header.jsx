@@ -6,7 +6,7 @@ import {
   XMarkIcon,
   ArrowDownCircleIcon,
 } from "@heroicons/react/24/outline";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation} from "react-router-dom";
 import { currentUser } from "./Utils";
 import { sendPostRequest } from "../ApiService";
 
@@ -15,7 +15,6 @@ function classNames(...classes) {
 }
 
 const Header = () => {
-  const navigate = useNavigate();
   const { pathname } = useLocation();
   const currentSlug = pathname.slice(1);
 
