@@ -72,3 +72,32 @@ For backend:
 	php artisan migrate
 	php artisan seed
  ```
+
+## Application Screenshots
+*Fig. 1: Homepage - Before LogIn
+![Homepage-Before LogIn](docs/screenshots/homepage1.png)
+
+
+*Fig. 2: Homepage - After LogIn
+![Homepage-After LogIn](docs/screenshots/homepage2.png)
+
+
+*Fig. 3: Homepage - Author Filter
+![Homepage-Author Filter](docs/screenshots/authorfilter.png)
+
+
+*Fig. 4: Homepage - Source Filter
+![Homepage-Source Filter](docs/screenshots/sourcefilter.png)
+
+
+*Fig. 5: Preferences Page
+![Homepage-Preferences Page](docs/screenshots/preferencespage.png)
+
+
+*Fig. 6: LogIn Page
+![Homepage-LogIn Page](docs/screenshots/loginpage.png)
+
+
+
+*Fig. 7: Register Page
+![Homepage-Register Page](docs/screenshots/registerpage.png)
