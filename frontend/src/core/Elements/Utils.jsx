@@ -1,11 +1,7 @@
 // authorUtils.js
 
-import { sendGetRequest } from "../ApiService"; 
-import {
-  differenceInHours,
-  format,
-  isToday,
-} from 'date-fns';
+import { sendGetRequest } from "../ApiService";
+import { differenceInHours, format, isToday } from "date-fns";
 
 export async function authorLoadOptions(
   search,
@@ -90,7 +86,7 @@ export function formatArticleDate(date) {
 }
 
 export const currentUser = () => {
-  const user = JSON.parse(localStorage.getItem('currentUser'));
+  const user = JSON.parse(localStorage.getItem("currentUser"));
 
   return user && user.name ? user : false;
 };

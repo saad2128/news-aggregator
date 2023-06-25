@@ -8,7 +8,7 @@ import { formatArticleDate } from "./Utils";
 const placeholderImage =
   "https://via.placeholder.com/1280x720.png?text=No+preview+is+available";
 
-const ArticleList = ({ articles, loading, loggedUser,totalNews }) => (
+const ArticleList = ({ articles, loading, loggedUser, totalNews }) => (
   <>
     <p className="mt-4 flex justify-between text-gray-500 text-sm">
       <span className="font-bold text-3xl tracking-tight">Latest News</span>
@@ -59,7 +59,6 @@ const ArticleList = ({ articles, loading, loggedUser,totalNews }) => (
                     )}
                   </p>
                   <div className="mt-6">
-                    
                     <div className="flex space-x-1 text-sm text-gray-500">
                       <span>{formatArticleDate(articles[0].published_at)}</span>
                     </div>
@@ -81,7 +80,6 @@ const ArticleList = ({ articles, loading, loggedUser,totalNews }) => (
                   <p className="text-sm font-medium text-gray-900">
                     {articles[0].raw_author}
                   </p>
-                 
                 </div>
               </div>
             </div>
@@ -122,7 +120,6 @@ const ArticleList = ({ articles, loading, loggedUser,totalNews }) => (
                     )}
                   </p>
                   <div className="mt-6">
-                    
                     <div className="flex space-x-1 text-sm text-gray-500">
                       <span>{formatArticleDate(article.published_at)}</span>
                     </div>
@@ -140,7 +137,6 @@ const ArticleList = ({ articles, loading, loggedUser,totalNews }) => (
                   <p className="text-sm font-medium text-gray-900">
                     {article.raw_author}
                   </p>
-                  
                 </div>
               </div>
             </div>

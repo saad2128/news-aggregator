@@ -84,9 +84,6 @@ const Home = () => {
   }
 
   const onChangeFilter = (value, type) => {
-    /**
-     * Reset query first.
-     */
     setHasMore(true);
     setPage(1);
     setArticles([]);
@@ -190,26 +187,27 @@ const Home = () => {
         </div>
 
         {loggedUser && (
-           <div className="col-span-1">
-           <div className="mt-1">
-            <Link
-              to="/preferences"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            >
-              Preferences
-            </Link>
-          </div></div>
+          <div className="col-span-1">
+            <div className="mt-1">
+              <Link
+                to="/preferences"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Preferences
+              </Link>
+            </div>
+          </div>
         )}
         <div className="col-span-1">
-        <div className="mt-1">
-          <button
-            onClick={handleButtonClick}
-            disabled={isDataLoading} // Disable the button while loading
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            {isDataLoading ? "Loading..." : "Get News"}
-          </button>
-        </div>
+          <div className="mt-1">
+            <button
+              onClick={handleButtonClick}
+              disabled={isDataLoading} // Disable the button while loading
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              {isDataLoading ? "Loading..." : "Get News"}
+            </button>
+          </div>
         </div>
       </div>
 
