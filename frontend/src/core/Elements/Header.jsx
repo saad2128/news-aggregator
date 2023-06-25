@@ -21,7 +21,7 @@ const Header = () => {
   const onClickSignOut = (e) => {
     e.preventDefault();
 
-    sendPostRequest(siteData.apiBaseURL + "logout").then(function (response) {
+    sendPostRequest("logout").then(function (response) {
       if (response.status) {
         localStorage.removeItem("currentUser");
         window.location.reload();
