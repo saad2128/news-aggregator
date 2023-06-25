@@ -18,11 +18,10 @@ const Register = () => {
     formData.append("email", submittedData.email);
     formData.append("password", submittedData.password);
 
-    sendPostRequest(siteData.apiBaseURL + "register", formData).then(function (
-      response
-    ) {
+    sendPostRequest("register", formData).then(function (response) {
       if (response.status) {
         localStorage.setItem("currentUser", JSON.stringify(response.user));
+       
         navigate("/");
       }
     });

@@ -35,8 +35,7 @@ const Home = () => {
     const sourceIds = sources.map((item) => item.value);
 
     sendGetRequest(
-      siteData.apiBaseURL +
-        `articles?page=${page}&search=${searchTerm}&authors=${authorIds}&sources=${sourceIds}`,
+      `articles?page=${page}&search=${searchTerm}&authors=${authorIds}&sources=${sourceIds}`,
       { Authorization: `Bearer ${loggedUser?.token}` }
     ).then(function (response) {
       if (response.status) {
@@ -57,17 +56,12 @@ const Home = () => {
 
   useEffect(() => {
     loadSelectedOptions(
-      siteData.apiBaseURL + "authors",
+      "authors",
       "author_name",
       setPreferredAuthors,
       loggedUser
     );
-    loadSelectedOptions(
-      siteData.apiBaseURL + "sources",
-      "source",
-      setPreferredSources,
-      loggedUser
-    );
+    loadSelectedOptions("sources", "source", setPreferredSources, loggedUser);
   }, []);
 
   function handleScroll() {
@@ -115,7 +109,7 @@ const Home = () => {
   const handleButtonClick = async () => {
     setIsDataLoading(true); // Set loading state to true
 
-    sendGetRequest(siteData.apiBaseURL + `news`).then(function (response) {
+    sendGetRequest(`news`).then(function (response) {
       setIsDataLoading(false);
       window.location.reload();
     });

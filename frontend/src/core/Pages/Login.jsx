@@ -17,9 +17,7 @@ const Login = () => {
     formData.append("email", submittedData.email);
     formData.append("password", submittedData.password);
 
-    sendPostRequest(siteData.apiBaseURL + "login", formData).then(function (
-      response
-    ) {
+    sendPostRequest("login", formData).then(function (response) {
       if (response.status) {
         localStorage.setItem("currentUser", JSON.stringify(response.user));
         navigate("/");

@@ -20,7 +20,7 @@ const Preferences = () => {
 
   useEffect(() => {
     setLoading(true);
-    sendGetRequest(siteData.apiBaseURL + `preferences`, {
+    sendGetRequest(`preferences`, {
       Authorization: `Bearer ${loggedUser?.token}`,
     }).then(function (response) {
       if (response.status) {
@@ -47,7 +47,7 @@ const Preferences = () => {
 
   const onSubmit = (submittedData) => {
     const savePreference = sendPostRequest(
-      siteData.apiBaseURL + "preferences",
+      "preferences",
       JSON.stringify(submittedData),
       {
         Authorization: `Bearer ${loggedUser?.token}`,

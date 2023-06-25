@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const sendPostRequest = async (url = '', formData = {}, headers = {}) => {
+const sendPostRequest = async (endpoint = '', formData = {}, headers = {}) => {
+  const url = siteData.apiBaseURL + endpoint;
   try {
     const response = await axios.post(url, formData, {
       method: 'POST',
@@ -22,7 +23,8 @@ const sendPostRequest = async (url = '', formData = {}, headers = {}) => {
 };
 
 
-const sendGetRequest = async (url = '', headers = {}, init = {}) => {
+const sendGetRequest = async (endpoint = '', headers = {}, init = {}) => {
+  const url = siteData.apiBaseURL + endpoint;
   try {
     const response = await axios.get(url, {
       ...init,
@@ -44,7 +46,8 @@ const sendGetRequest = async (url = '', headers = {}, init = {}) => {
   }
 };
 
-const sendDeleteRequest = async (url = '', headers = {}) => {
+const sendDeleteRequest = async (endpoint = '', headers = {}) => {
+  const url = siteData.apiBaseURL + endpoint;
   try {
     const response = await axios.delete(url, {
       method: 'DELETE',
