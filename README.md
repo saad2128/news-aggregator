@@ -5,11 +5,12 @@ News Aggregator Web Application using Laravel and React Js
 
 ## Table of Contents
 
-  - [Project Name](#project-name)
-  - [Table of Contents](#table-of-contents)
-  - [Docker based Configuration](#docker-based-configuration)
-  - [Verify Tables in MySQL Container](#verify-tables-in-mysql-container)
-  - [For manual Configuration:](#for-manual-configuration)
+- [Project Name](#project-name)
+	- [Table of Contents](#table-of-contents)
+	- [Docker based Configuration](#docker-based-configuration)
+	- [Verify Tables in MySQL Container](#verify-tables-in-mysql-container)
+	- [To monitor laravel container logs](#to-monitor-laravel-container-logs)
+	- [For manual Configuration:](#for-manual-configuration)
 
 
 ## Docker based Configuration
@@ -47,6 +48,14 @@ use news;
 show tables;
 ```
 (these configurations are defined in .env file)
+
+## To monitor laravel container logs
+
+```bash
+docker exec -it <container_name_or_id> sh
+cd /var/www/html/storage
+cat logs/laravel.log
+```
 
 ## For manual Configuration:
 For the Front end:
